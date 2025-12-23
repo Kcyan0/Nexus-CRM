@@ -1,0 +1,7 @@
+{
+  "name": "NexusCRM Pro",
+  "description": "High-performance AI-driven CRM dashboard for sales intelligence and pipeline management.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
