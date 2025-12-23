@@ -94,7 +94,7 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-4xl font-extrabold text-white tracking-tight">Visão Geral</h1>
           <p className="text-slate-400 mt-2 flex items-center gap-2">
             <Zap size={16} className="text-yellow-500 fill-yellow-500" />
-            {leads.length > 0 ? `${leads.length} leads sincronizados no Nexus Engine.` : 'Aguardando novas oportunidades...'}
+            {leads.length > 0 ? `${leads.length} leads sincronizados no FERA Engine.` : 'Aguardando novas oportunidades...'}
           </p>
         </div>
         <button 
@@ -114,7 +114,7 @@ export const Dashboard: React.FC = () => {
             <Sparkles size={28} className={isGeneratingAi ? 'animate-spin' : ''} />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-1">Nexus Intelligence</h3>
+            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-1">FERA Intelligence</h3>
             <p className="text-white text-lg font-medium leading-relaxed italic">
               {isGeneratingAi ? 'Analisando performance comercial...' : `"${aiInsight || 'Pronto para analisar seu pipeline.'}"`}
             </p>

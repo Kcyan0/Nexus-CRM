@@ -49,7 +49,7 @@ export const Login: React.FC = () => {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         if (data.session) {
-          addToast('Acesso Autorizado', 'Bem-vindo ao Nexus CRM Pro.', 'success');
+          addToast('Acesso Autorizado', 'Bem-vindo ao FERA CRM Pro.', 'success');
           navigate('/');
         }
       }
@@ -77,10 +77,10 @@ export const Login: React.FC = () => {
       <div className="bg-surface/40 backdrop-blur-2xl border border-white/5 w-full max-w-md p-10 rounded-[2rem] shadow-2xl relative z-10">
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-xl shadow-primary/20 transform hover:rotate-6 transition-transform">
-            <span className="text-white font-black text-3xl">N</span>
+            <span className="text-white font-black text-3xl">F</span>
           </div>
           <h2 className="text-3xl font-black text-white mb-2 tracking-tight">
-            {isRegistering ? 'Nexus Engine' : 'Nexus Access'}
+            {isRegistering ? 'FERA Engine' : 'FERA Access'}
           </h2>
           <p className="text-slate-500 text-sm font-medium">
             {isRegistering ? 'Crie seu ambiente de alta performance' : 'Conecte-se à sua inteligência de vendas'}
@@ -164,7 +164,7 @@ export const Login: React.FC = () => {
             {isLoading ? (
               <Loader2 className="w-6 h-6 animate-spin" />
             ) : (
-              <>{isRegistering ? 'Ativar Conta' : 'Acessar Nexus'} <ArrowRight size={18} /></>
+              <>{isRegistering ? 'Ativar Conta' : 'Acessar FERA'} <ArrowRight size={18} /></>
             )}
           </button>
         </form>
@@ -174,7 +174,7 @@ export const Login: React.FC = () => {
             onClick={() => { setIsRegistering(!isRegistering); setErrorMsg(null); }}
             className="text-slate-500 hover:text-white text-xs font-bold transition-colors uppercase tracking-widest"
           >
-            {isRegistering ? 'Já possui acesso? Conecte-se' : 'Novo por aqui? Criar conta Nexus'}
+            {isRegistering ? 'Já possui acesso? Conecte-se' : 'Novo por aqui? Criar conta FERA'}
           </button>
         </div>
       </div>

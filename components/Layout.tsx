@@ -80,7 +80,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 <Zap size={20} className="text-white fill-white" />
               </div>
               <span className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                Nexus<span className="text-primary">CRM</span>
+                FERA<span className="text-primary">CRM</span>
               </span>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-textSecondary hover:text-textPrimary p-2 hover:bg-white/5 rounded-lg">

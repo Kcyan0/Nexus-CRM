@@ -109,7 +109,8 @@ export const Leads: React.FC = () => {
   };
 
   const handleDelete = async (e: React.MouseEvent, id: string, name: string) => {
-    e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation(); // Garante que não abra o modal
     if (window.confirm(`Excluir o lead "${name}" permanentemente?`)) {
       await deleteLead(id);
     }
@@ -320,8 +321,10 @@ export const Leads: React.FC = () => {
                         <td className="px-8 py-5 text-right pr-12">
                           <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
                             <button
+                              type="button"
                               onClick={(e) => handleDelete(e, lead.id, lead.name)}
                               className="p-2.5 text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+                              title="Excluir Lead"
                             >
                               <Trash2 size={18} />
                             </button>

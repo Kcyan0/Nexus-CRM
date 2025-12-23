@@ -50,7 +50,7 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
 
-      // Leads (RLS filtrará automaticamente pelo user_id)
+      // Leads (RLS filtrará automaticamente pelo user_id no banco)
       const { data: leadsData, error: leadsError } = await supabase
         .from('leads')
         .select('*')
@@ -89,9 +89,9 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     const syncUser = async (session: any) => {
       if (session?.user) {
-        // Tenta buscar o perfil, mas não bloqueia se não encontrar (o trigger criará na sequência)
+        // Tenta buscar o perfil
         const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-        const displayName = profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Usuário Nexus';
+        const displayName = profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Usuário FERA';
         
         setUser({
           id: session.user.id,
@@ -118,13 +118,14 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const { error } = await action();
       if (error) {
         console.error("Supabase Error:", error);
-        addToast('Banco de Dados', error.message, 'error');
+        addToast('Erro no Banco de Dados', error.message || 'Falha na operação', 'error');
         return false;
       }
-      if (successMsg) addToast('Nexus CRM', successMsg, 'success');
-      await fetchData(); // Refresh imediato
+      if (successMsg) addToast('FERA CRM', successMsg, 'success');
+      await fetchData(); // Refresh imediato dos dados
       return true;
     } catch (e: any) {
+      console.error("Network Error:", e);
       addToast('Conectividade', 'Erro de rede ou permissão.', 'error');
       return false;
     }
@@ -141,76 +142,79 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     searchQuery,
     setSearchQuery,
     toggleTheme: () => setTheme(prev => prev === 'dark' ? 'light' : 'dark'),
+    
     updateLeadStatus: async (id, status) => {
-      if (!user) return;
+      // Removemos .eq('user_id', user.id) pois o RLS já garante a segurança
       await apiAction(() => 
         supabase.from('leads')
           .update({ status, last_interaction: 'Atualizado agora' })
-          .eq('id', id)
-          .eq('user_id', user.id), 
-        ''
+          .eq('id', id), 
+        '' // Atualização silenciosa de status para não poluir com toasts
       );
     },
+
     addLead: async (l) => {
       if (!user) return false;
-      // Garante que o user_id seja enviado explicitamente
+      // Aqui precisamos enviar o user_id explicitamente para a criação
       return await apiAction(() => 
         supabase.from('leads').insert([{ ...l, user_id: user.id }]), 
         'Novo lead registrado com sucesso.'
       );
     },
+
     updateLead: async (l) => {
-      if (!user) return;
       const { id, score, ...data } = l as any;
       await apiAction(() => 
         supabase.from('leads')
           .update(data)
-          .eq('id', id)
-          .eq('user_id', user.id), 
+          .eq('id', id), 
         'Alterações salvas.'
       );
     },
+
     deleteLead: async (id) => {
-      if (!user) return;
+      // Simplificado: Confia na política RLS do banco (auth.uid() = user_id)
       await apiAction(() => 
         supabase.from('leads')
           .delete()
-          .eq('id', id)
-          .eq('user_id', user.id), 
+          .eq('id', id), 
         'Lead removido.'
       );
     },
+
     deleteLeads: async (ids) => {
-      if (!user) return;
       await apiAction(() => 
         supabase.from('leads')
           .delete()
-          .in('id', ids)
-          .eq('user_id', user.id), 
+          .in('id', ids), 
         'Seleção excluída.'
       );
     },
+
     addTask: (t) => {
       if (!user) return;
       apiAction(() => supabase.from('tasks').insert([{ ...t, user_id: user.id }]), 'Tarefa criada.');
     },
+
     updateTask: (t) => {
-      if (!user) return;
       const { id, ...data } = t;
-      apiAction(() => supabase.from('tasks').update(data).eq('id', id).eq('user_id', user.id), 'Tarefa atualizada.');
+      apiAction(() => supabase.from('tasks').update(data).eq('id', id), 'Tarefa atualizada.');
     },
+
     deleteTask: (id) => {
-      if (!user) return;
-      apiAction(() => supabase.from('tasks').delete().eq('id', id).eq('user_id', user.id), 'Tarefa removida.');
+      apiAction(() => supabase.from('tasks').delete().eq('id', id), 'Tarefa removida.');
     },
+
     addTeamMember: async () => {
       addToast('Equipe', 'O convite deve ser feito via cadastro de usuário.', 'info');
     },
+
     deleteTeamMember: async (id) => {
       if (user?.role === 'Admin') {
         await apiAction(() => supabase.from('profiles').delete().eq('id', id), 'Membro removido.');
       }
     },
+
     addToast,
     markNotificationRead: (id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n)),
     updateUser: async (data) => {
@@ -228,7 +232,7 @@ export const CRMProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       {isLoading ? (
         <div className="h-screen w-screen bg-[#020617] flex flex-col items-center justify-center">
           <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-          <p className="text-slate-500 mt-4 font-bold text-xs uppercase tracking-widest animate-pulse">Sincronizando Nexus...</p>
+          <p className="text-slate-500 mt-4 font-bold text-xs uppercase tracking-widest animate-pulse">Sincronizando FERA...</p>
         </div>
       ) : children}
     </CRMContext.Provider>
